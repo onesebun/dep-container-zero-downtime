@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  nodejs:
+    image: localhost:5000/express-simple
+    ports:
+      - "3000:3000"
+    command: node app.js
+    deploy:
+      replicas: 4
+      update_config:
+        parallelism: 2
+        order: start-first
+        failure_action: rollback
+        delay: 10s
+      rollback_config:
+        parallelism: 0
+        order: stop-first
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000 || exit 1"]
